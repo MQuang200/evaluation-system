@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins
+  namespace: jenkins
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      securityContext:
+        fsGroup: 1000 
+        runAsUser: 1000
+      serviceAccountName: jenkins-admin
+      containers:
+      - name: jenkins
+        image: jenkins/jenkins:lts-jdk11
+        ports:
+        - containerPort: 8080
+        - containerPort: 50000
+        volumeMounts:
+        - name: jenkins-home
+          mountPath: /var/jenkins_home
+      volumes:
+        - name: jenkins-home
+          persistentVolumeClaim: 
+            claimName: jenkins-pvc 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins
+  namespace: jenkins
+spec:
+  type: LoadBalancer 
+  ports:
+  - port: 8080
+    name: httpport
+    targetPort: 8080
+    protocol: TCP
+    nodePort: 30001
+  - port: 50000
+    name: jnlpport
+    targetPort: 50000
+    protocol: TCP
+    nodePort: 31963
+  selector:
+    app: jenkins
