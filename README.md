@@ -25,7 +25,7 @@ curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-
 sudo install minikube-linux-amd64 /usr/local/bin/minikube
 ```
 
-4. ### Start miniku
+4. ### Start minikube
 
 ```
 minikube start -n 3 --disk-size=10g \\n--cpus=2 --memory=4g
